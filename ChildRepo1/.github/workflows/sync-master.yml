@@ -1,0 +1,38 @@
+name: Sync Master Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout master repository
+        uses: actions/checkout@v4
+        with:
+          repository: Koro-Coder/master
+          token: ${{ secrets.MASTER_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Update ChildRepo1 subtree
+        run: |
+          git subtree pull \
+            --prefix=ChildRepo1 \
+            https://github.com/Koro-Coder/child1.git \
+            main \
+
+      - name: Commit changes
+        run: |
+          git add .
+          git diff --cached --quiet || git commit -m "Sync ChildRepo1"
+
+      - name: Push
+        run: git push origin main
