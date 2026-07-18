@@ -28,7 +28,6 @@ jobs:
             --prefix=ChildRepo1 \
             https://github.com/Koro-Coder/child1.git \
             main \
-            --squash
 
       - name: Commit changes
         run: |
