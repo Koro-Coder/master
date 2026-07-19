@@ -1,0 +1,48 @@
+name: Sync Master Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout master repository
+        uses: actions/checkout@v4
+        with:
+          repository: Koro-Coder/master
+          token: ${{ secrets.MASTER_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Sync subtree
+        run: |
+          if [ ! -d "BJU-DB" ]; then
+            echo "Subtree not found. Adding..."
+            git subtree add \
+              --prefix=BJU-DB \
+              https://github.com/Koro-Coder/BJU-DB.git \
+              main
+          else
+            echo "Subtree exists. Pulling latest..."
+            git subtree pull \
+              --prefix=BJU-DB \
+              https://github.com/Koro-Coder/BJU-DB.git \
+              main
+          fi
+
+      - name: Commit changes
+        run: |
+          git add .
+          git diff --cached --quiet || git commit -m "Sync BJU-DB"
+
+      - name: Push changes
+        run: |
+          git push origin main
