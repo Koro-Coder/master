@@ -17,6 +17,10 @@ jobs:
           token: ${{ secrets.MASTER_TOKEN }}
           fetch-depth: 0
 
+      - name: Switch to selected branch
+        run: |
+          git checkout Tracker
+
       - name: Configure Git
         run: |
           git config user.name "github-actions"
@@ -45,4 +49,4 @@ jobs:
 
       - name: Push changes
         run: |
-          git push origin main
+          git push origin Tracker
